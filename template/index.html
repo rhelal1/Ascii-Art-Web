@@ -1,0 +1,87 @@
+<html>
+<head>
+    <title>assc-art-web</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <style>
+        .colorchenge{color: {{ .Color}};}
+    </style>
+</head>
+<body>
+<div id="header"><h1><spain id="colorLetter">A</spain>scii <spain id="colorLetter">A</spain>rt <spain id="colorLetter">W</spain>eb</h1></div>
+<div id="continer">
+<div id="formOption">
+    <form method="POST" action="/">
+        <label for="text">Enter your text:</label>
+        <br><br>
+        <textarea type="text" id="text" name="thetext" required></textarea>
+        <br><p>Only 2000 characters allowed</p><br>
+            <label for="text">Font Color:</label>
+            <input id="fg_color" type="color" name="color" value="#000000"required>
+        <select name="chose" id="chose">
+            <option value="standard">Standard</option>
+            <option value="shadow">Shadow</option>
+            <option value="thinkertoy">Thinkertoy</option>
+        </select>
+        <select name="FileType" id="FileType">
+            <option value=".txt">Text</option>
+            <option value=".doc">Microsoft Word Document</option>
+            <option value=".org">Emacs Org Text Document</option>
+        </select>
+        <br><br>
+        <input id="submit-button" class='Button' type="submit" value="Submit">
+    </form>
+    <button type="submit" name="download" value="yes" id="dl-button" class='Button' onclick="request_download()">Download File</button>
+    </div>
+    <div class="colorchenge" id="output">
+        {{ range .Text }}
+        <pre>{{ . }}</pre>
+        {{end}}
+    </div>
+</div>
+<div id="footer"><spain id="colorLetter">Created By:</spain>&nbsp;<spain id="colorLetter">R</spain>uqaya <spain id="colorLetter">H</spain>elal,   &nbsp;&nbsp;the Genius <spain id="colorLetter">M</spain>aryam <spain id="colorLetter">A</spain>bbas</div>
+<a href='/get-file' style='display: none' id="hidden-button" download="your-file"/>
+
+<script> 
+request_download = (function() {
+    // TODO: check for user input
+    let input_text = document.getElementById('text').value
+    let submit_button = document.getElementById('submit-button')
+
+    if (input_text < 1) {
+        submit_button.click()
+        return
+    }
+
+    let text_sytle = document.getElementById('chose').value 
+    let fg_color = document.getElementById('fg_color').value  
+    let file_type = document.getElementById('FileType').value 
+    let http = new XMLHttpRequest();
+    let url = '/';
+    // params = 'orem=ipsum&name=binny'
+    let params = 'thetext=' + input_text + "&chose=" + text_sytle + "&color=" + fg_color + "&FileType=" + file_type + "&download=yes"
+    http.open('POST', url, true);
+    //Send the proper header information along with the request
+    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    http.onreadystatechange = function() {//Call a function when the state changes.
+
+	        if(http.readyState === XMLHttpRequest.DONE) {
+
+            console.log(http.status)
+
+            if (http.status == 200) {
+                let hidden_download_button = document.getElementById('hidden-button')
+                // TODO: change the button 'download' attribuite value before clicking
+                hidden_download_button.setAttribute('download', "file"+file_type);
+                hidden_download_button.click() 
+            }
+
+            submit_button.click()
+        }
+    }
+    http.send(params);
+})
+</script>
+
+</body>
+</html>
+
